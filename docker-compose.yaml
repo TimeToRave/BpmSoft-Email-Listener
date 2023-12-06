@@ -9,6 +9,11 @@ services:
       REDIS_AOF_ENABLED: "no"
     ports:
       - "6379:6379"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "1"
       
   rabbitmqOfficial:
    image: rabbitmq:management-alpine
@@ -20,7 +25,12 @@ services:
    ports:
     - 5672:5672 # AMQP protocol port
     - 15672:15672 # HTTP management UI user:admin pw:admin
-    
+   logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "1" 
+
   ListenerAPI:
     image: bpmonline/exchangelistener:0.8.74 # Latest Listener version available here https://hub.docker.com/r/bpmonline/exchangelistener/tags?page=1&ordering=last_updated
     container_name: 'ListenerAPI'
@@ -37,6 +47,11 @@ services:
     volumes:
      - ./appsettings.json:/app/config/appsettings.json:ro
      - ./appsettingsrmq.json:/app/config/rabbitmq.secrets.json:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "1"
       
   ListenerWorker:
     image: bpmonline/exchangelistener-worker:0.8.74 # Latest Listener version available here https://hub.docker.com/r/bpmonline/exchangelistener/tags?page=1&ordering=last_updated
@@ -52,4 +67,9 @@ services:
     volumes:
      - ./appsettings.json:/app/appsettings.json:ro
      - ./appsettingsrmq.json:/app/appsettings.Production.json:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "1"
 
