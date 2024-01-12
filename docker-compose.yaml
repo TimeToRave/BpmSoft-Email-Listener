@@ -57,6 +57,8 @@ services:
     image: bpmonline/exchangelistener-worker:0.8.74 # Latest Listener version available here https://hub.docker.com/r/bpmonline/exchangelistener/tags?page=1&ordering=last_updated
     container_name: 'ListenerWorker'
     restart: unless-stopped
+    # extra_hosts:
+    #  - "crm.domain.ru:host-gateway"
     environment:
       ExchangeListenerRedisHost: redisOfficial:6379 # Redis connection
       ExchangeListenerRedisDatabase: 0 # Redis DB
