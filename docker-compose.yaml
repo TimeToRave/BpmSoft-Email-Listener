@@ -36,7 +36,7 @@ services:
     container_name: 'ListenerAPI'
     restart: unless-stopped
     ports:
-      - 10000:80 # Port forward. External port:local port
+      - 10000:8080 # Port forward. External port:local port
     environment:
       ExchangeListenerRedisHost: redisOfficial:6379 # Redis connection
       ExchangeListenerRedisDatabase: 0 # Redis DB
