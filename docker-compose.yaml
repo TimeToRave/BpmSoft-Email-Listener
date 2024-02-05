@@ -2,7 +2,7 @@ version: "3.8"
 services:
   redisOfficial:
     image: 'docker.io/bitnami/redis'
-    container_name: 'Redis'
+    container_name: 'redisOfficial'
     restart: unless-stopped
     environment:
       ALLOW_EMPTY_PASSWORD: "yes" # redis anomymous mode
@@ -17,14 +17,14 @@ services:
       
   rabbitmqOfficial:
    image: rabbitmq:management-alpine
-   container_name: 'RabbitMQ'
+   container_name: 'rabbitmqOfficial'
    restart: unless-stopped
    volumes:
     - ./rabbitmq.config:/etc/rabbitmq/rabbitmq.config:ro
     - ./definitions.json:/etc/rabbitmq/definitions.json:ro
    ports:
     - 5672:5672 # AMQP protocol port
-    - 15672:15672 # HTTP management UI user:admin pw:admin
+    - 15672:15672 # HTTP management UI
    logging:
       driver: "json-file"
       options:
@@ -32,7 +32,7 @@ services:
         max-file: "1" 
 
   ListenerAPI:
-    image: bpmonline/exchangelistener:0.8.74 # Latest Listener version available here https://hub.docker.com/r/bpmonline/exchangelistener/tags?page=1&ordering=last_updated
+    image: bpmsoft/exchangelistener:0.8.83
     container_name: 'ListenerAPI'
     restart: unless-stopped
     ports:
@@ -46,7 +46,7 @@ services:
       - rabbitmqOfficial
     volumes:
      - ./appsettings.json:/app/config/appsettings.json:ro
-     - ./appsettingsrmq.json:/app/config/rabbitmq.secrets.json:ro
+     - ./rmqsecret.json:/app/config/rabbitmq.secrets.json:ro
     logging:
       driver: "json-file"
       options:
@@ -54,7 +54,7 @@ services:
         max-file: "1"
       
   ListenerWorker:
-    image: bpmonline/exchangelistener-worker:0.8.74 # Latest Listener version available here https://hub.docker.com/r/bpmonline/exchangelistener/tags?page=1&ordering=last_updated
+    image: bpmsoft/exchangelistener-worker:0.8.83
     container_name: 'ListenerWorker'
     restart: unless-stopped
     # extra_hosts:
@@ -68,10 +68,9 @@ services:
       - rabbitmqOfficial
     volumes:
      - ./appsettings.json:/app/appsettings.json:ro
-     - ./appsettingsrmq.json:/app/appsettings.Production.json:ro
+     - ./rmqsecret.json:/app/appsettings.Production.json:ro
     logging:
       driver: "json-file"
       options:
         max-size: "100m"
         max-file: "1"
-
