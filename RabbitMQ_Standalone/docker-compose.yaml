@@ -1,23 +1,8 @@
 version: "3.8"
 services:
-  redisOfficial:
-    image: 'docker.io/bitnami/redis'
-    container_name: 'redisOfficial'
-    restart: unless-stopped
-    environment:
-      ALLOW_EMPTY_PASSWORD: "yes" # redis anomymous mode
-      REDIS_AOF_ENABLED: "no"
-    ports:
-      - "6379:6379"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
-        max-file: "1"
-      
-  rabbitmqOfficial:
+  RabbitMQ_Standalone:
    image: rabbitmq:management-alpine
-   container_name: 'rabbitmqOfficial'
+   container_name: 'RabbitMQ_Standalone'
    restart: unless-stopped
    volumes:
     - ./rabbitmq.config:/etc/rabbitmq/rabbitmq.config:ro
@@ -30,47 +15,3 @@ services:
       options:
         max-size: "100m"
         max-file: "1" 
-
-  ListenerAPI:
-    image: bpmsoft/exchangelistener:0.8.83
-    container_name: 'ListenerAPI'
-    restart: unless-stopped
-    ports:
-      - 10000:8080 # Port forward. External port:local port
-    environment:
-      ExchangeListenerRedisHost: redisOfficial:6379 # Redis connection
-      ExchangeListenerRedisDatabase: 0 # Redis DB
-      PodName: ExchangeListener
-    depends_on:
-      - redisOfficial
-      - rabbitmqOfficial
-    volumes:
-     - ./appsettings.json:/app/config/appsettings.json:ro
-     - ./rmqsecret.json:/app/config/rabbitmq.secrets.json:ro
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "100m"
-        max-file: "1"
-      
-  ListenerWorker:
-    image: bpmsoft/exchangelistener-worker:0.8.83
-    container_name: 'ListenerWorker'
-    restart: unless-stopped
-    # extra_hosts:
-    #  - "crm.domain.ru:host-gateway"
-    environment:
-      ExchangeListenerRedisHost: redisOfficial:6379 # Redis connection
-      ExchangeListenerRedisDatabase: 0 # Redis DB
-      PodName: ExchangeListenerWorker
-    depends_on:
-      - redisOfficial
-      - rabbitmqOfficial
-    volumes:
-     - ./appsettings.json:/app/appsettings.json:ro
-     - ./rmqsecret.json:/app/appsettings.Production.json:ro
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "100m"
-        max-file: "1"
