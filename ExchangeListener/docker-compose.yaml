@@ -24,7 +24,7 @@ services:
     - ./definitions.json:/etc/rabbitmq/definitions.json:ro
    ports:
     - 35672:5672 # AMQP protocol port
-    - 25672:15672 # HTTP management UI
+    - 45672:15672 # HTTP management UI
    logging:
       driver: "json-file"
       options:
